@@ -1,0 +1,11 @@
+{
+  "Method": "POST",
+  "Handle": "pay/alipay",
+  "Param": {
+	 "account":"yk-2585614049f44836b3c702ae1888c19e",
+    "payPlatform": "0",
+    "country": "CN",
+    "isRenew": "0",
+    "setMealId": "2"
+  }
+}

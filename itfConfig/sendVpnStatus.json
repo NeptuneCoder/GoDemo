@@ -1,0 +1,8 @@
+
+{
+  "Method": "GET",
+  "Handle": "vpn/sendvpnstatus",
+  "Param": {
+    "account": "yk-6ec3217615f648d49eec444669dc7e7e"
+  }
+}

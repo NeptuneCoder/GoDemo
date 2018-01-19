@@ -1,0 +1,6 @@
+{
+  "Method": "POST",
+  "Handle": "user/logout",
+  "Param": {}
+    
+}

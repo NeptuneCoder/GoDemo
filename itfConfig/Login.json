@@ -1,0 +1,9 @@
+{
+  "Method": "POST",
+  "Handle": "user/oauthLogin",
+  "Param": {
+    "platformId": "1",
+    "uuid": "0232322",
+    "loginChannel": 0
+  }
+}
