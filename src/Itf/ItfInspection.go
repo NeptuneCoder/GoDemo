@@ -12,28 +12,28 @@ import (
 
 func main() {
 	for {
-		time.Sleep(30 * time.Minute)
+
 		currentPath := verifyitf.GetCurrentDirectory()
 		fmt.Println("path = ", currentPath)
-		bc, err := verifyitf.ReadBaseConfig(currentPath + verifyitf.BaseConfigName)
+		rbc, err := verifyitf.ReadBaseConfig(currentPath + verifyitf.BaseConfigName)
 		if err != nil {
 			fmt.Println("sorroy ,need config,Please contact yh ", err)
 			return
 		}
 
-		for _, path := range bc.Order {
-			fmt.Println("pa = ", path)
+		for _, itfName := range rbc.Order {
+			fmt.Println("pa = ", itfName)
 			//获取接口的参数
-			itf, err := verifyitf.ReadItfParam(bc.Path + path)
+			itf, err := verifyitf.ReadItfParam(rbc.Path + itfName)
 
 			if err != nil {
 				fmt.Println("read ReadItfParam config failed = ", err)
 			} else {
-				re, _ := yhhttp.HttpRequest(verifyitf.GenerateRequest(bc, itf))
-				if bc.RefreshToken == path { //刷新token的接口和读取的参数文件名一致时，刷新token
+				re, _ := yhhttp.HttpRequest(verifyitf.GenerateRequest(rbc, itf))
+				if rbc.RefreshToken == itfName { //刷新token的接口和读取的参数文件名一致时，刷新token
 					//当时登录接口时，将token值赋给bc的tokenValue属性上。
 					str := fmt.Sprintf("%v", re.Data["token"])
-					bc.Headers[bc.TokenName] = string(str)
+					rbc.Headers[rbc.TokenName] = string(str)
 					fmt.Println("token", string(str))
 				} else {
 					if re.Code != 200 {
@@ -42,12 +42,14 @@ func main() {
 						} else if re.Code == 4014 {
 							yhhttp.HttpRequest(Notify("刷新接口也异常了。"))
 						} else {
-							yhhttp.HttpRequest(Notify(path+"接口出现了问题。"))
+							yhhttp.HttpRequest(Notify(itfName+"接口出现了问题。"))
 						}
 					}
 				}
 			}
 		}
+
+		time.Sleep(rbc.Time * time.Minute)
 	}
 }
 
