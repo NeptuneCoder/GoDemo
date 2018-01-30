@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	yhhttp.HttpRequest(SendMsgRequest())
+	athttp.HttpRequest(SendMsgRequest())
 }
 
 func SendMsgRequest() func() (*http.Request, error) {

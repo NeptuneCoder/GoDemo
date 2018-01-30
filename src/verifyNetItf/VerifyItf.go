@@ -119,7 +119,7 @@ func main() {
 			log.Fatal("read ReadItfParam config failed = ", err)
 		} else {
 			start := time.Now().Nanosecond() //执行前的时间
-			re := httpRequest(bc, itf)
+			re,errMsg := httpRequest(bc, itf)
 			if bc.RefreshToken == path { //刷新token的接口和读取的参数文件名一致时，刷新token
 				//当时登录接口时，将token值赋给bc的tokenValue属性上。
 				str := fmt.Sprintf("%v", re.Data["token"])
@@ -127,7 +127,8 @@ func main() {
 				fmt.Println("token", string(str))
 			}
 			end := time.Now().Nanosecond() //执行结束的时间
-			record, err = AssembleJson(itf.Handle, ((end - start) / 1e6), re.Code)
+
+			record, err = AssembleJson(fmt.Sprintf("%v",errMsg),itf.Handle, ((end - start) / 1e6), re.Code)
 		}
 	}
 	defer func() { //使用匿名函数处理最后必须执行的功能
@@ -201,7 +202,7 @@ func ReadItfParam(path string) (*ItfParams, error) {
 请求网络接口
 增加对支持POST 和 GET请求的支持
 */
-func httpRequest(bc *BaseConfig, param *ItfParams) *BaseResponse {
+func httpRequest(bc *BaseConfig, param *ItfParams)( *BaseResponse ,error){
 	client := &http.Client{}
 	var req *http.Request
 	var err error
@@ -222,7 +223,7 @@ func httpRequest(bc *BaseConfig, param *ItfParams) *BaseResponse {
 	}
 
 	if err != nil {
-		return nil
+		return nil,err
 	}
 	//添加头信息
 	for k, v := range bc.Headers {
@@ -235,13 +236,13 @@ func httpRequest(bc *BaseConfig, param *ItfParams) *BaseResponse {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// handle error
-		return nil
+		return nil,err
 	}
 	var br BaseResponse
 	json.Unmarshal(body, &br)
 	fmt.Println(string(body))
 	//返回请求的结果
-	return &br
+	return &br,nil
 
 }
 
@@ -250,11 +251,12 @@ func httpRequest(bc *BaseConfig, param *ItfParams) *BaseResponse {
 */
 var cache = make(map[string]interface{})
 
-func AssembleJson(handle string, time, code int) ([]byte, error) {
+func AssembleJson(errMsg,handle string, time, code int) ([]byte, error) {
 
 	v := make(map[string]interface{})
 	v["time"] = time
 	v["code"] = code
+	v["err"] = errMsg
 	cache[handle] = v
 	re, err := json.Marshal(cache)
 	if err != nil {
