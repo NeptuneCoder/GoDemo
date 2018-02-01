@@ -1,4 +1,5 @@
-package gdbfile
+package main
+
 
 import (
 	"fmt"
@@ -6,17 +7,17 @@ import (
 )
 
 func counting(c chan<- int) {
+
 	for i := 0; i < 10; i++ {
-		time.Sleep(2 * time.Second)
+		msg:= "starting a gofunc id  = "
+		fmt.Println("msg:", msg,string(i))
+		time.Sleep(1 * time.Second)
 		c <- i
 	}
-	close(c)
+	close(c)//当写完以后，通知不能再写入了。开始读取
 }
 func main() {
-	msg := "Starting main"
-	fmt.Println(msg)
 	bus := make(chan int)
-	msg = "starting a gofunc"
 	go counting(bus)
 	for count := range bus {
 		fmt.Println("count:", count)
